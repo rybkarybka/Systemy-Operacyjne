@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Skrypt w podanym katalogu (i podkatalogach) wyszykuje najnowszy plik, jednocześnie większy niż podana wielkość w bajtach.
+
+
 if (( $# == 2 )); then
   if [[ -d "$1" ]]; then
 	if (( $2 > 0 )); then

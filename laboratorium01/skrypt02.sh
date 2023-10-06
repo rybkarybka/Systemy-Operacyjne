@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#Skrypt losuje liczbę całkowitą z podanego zakresu i umożliwia wykonanie tradycyjnej rozgrywki “zgadnij liczbę”. Proszę sprawdzić, czy min>max. Proszę ograniczyć liczbę zgadywań.
+
+
 if (( $# == 2 )); then
   if (( $1 >= $2 )); then
 	echo "Min jest rowne lub wieksze niz max"
