@@ -17,10 +17,12 @@ int signum;
 int main(){
   sleep(5);
   //trying to get pid of process to send signal to
-  char line[6];
+  char line[10];
   FILE * command = popen("pidof catchsignal","r");
-  fgets(line, 6, command);
-  int pid = atoi(line);
+  fgets(line, 10, command);
+  long long int pid = atoi(line);
+
+  printf("Trying to send signal to this PID: %d\n", pid);
 	
   int tab[] = {2,4,6,8,11,14,15, 3};
   for(int i = 0; i <= 7; i++){

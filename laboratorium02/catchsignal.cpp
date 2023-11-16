@@ -14,6 +14,7 @@ void signalHandler(int signum){
 }
 
 int main(){
+  printf("Catching signals ... \nMy pid is: %d\n", getpid());
   signal(SIGINT, signalHandler);
   signal(SIGABRT,signalHandler);
   signal(SIGFPE, signalHandler);
