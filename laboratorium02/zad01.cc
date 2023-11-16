@@ -13,6 +13,7 @@ using namespace std;
 
 // open file to write
 /* ofstream f ("text"); */
+ifstream INPUTFILE;
  
 // alloc statically
 int const LENTGH = 5; // it has to be const if we want it here
@@ -25,6 +26,10 @@ int main(){
 
   // open file to write
   ofstream f ("text");
+  /* ifstream inputFile("text"); */
+
+  // open file to write globally
+  INPUTFILE.open("text");
  
   // alloc statically
   int len = 5;
