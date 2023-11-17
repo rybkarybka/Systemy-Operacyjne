@@ -14,10 +14,10 @@ using namespace std;
 // open file to write
 /* ofstream f ("text"); */
 ifstream INPUTFILE;
- 
+
 // alloc statically
 int const LENTGH = 5; // it has to be const if we want it here
-  
+
 // alloc dynamically
 int *dynglob = (int*)malloc(sizeof(int));
 
@@ -30,10 +30,10 @@ int main(){
 
   // open file to write globally
   INPUTFILE.open("text");
- 
+
   // alloc statically
   int len = 5;
-  
+
   // alloc dynamically
   int *dynloc = (int*)malloc(sizeof(int));
   *dynloc = 1;
@@ -55,7 +55,7 @@ int main(){
 	printf("Child scanf completed\n\n");
   }
   else { //parent process
-	// parent will wait for the child to complete
+		 // parent will wait for the child to complete
 	wait(NULL);
 	printf("Child Complete\n");
 	getchar();
