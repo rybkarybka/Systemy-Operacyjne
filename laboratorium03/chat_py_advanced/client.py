@@ -29,6 +29,9 @@ def receive():
             mess = client.recv(1024).decode('utf-8')
             if mess == 'NICK':
                 client.send(nick.encode('utf-8'))
+            elif mess == '':
+                close(client)
+                break
             else:
                 print(mess)
         
