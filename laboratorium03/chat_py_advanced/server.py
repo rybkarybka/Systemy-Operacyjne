@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-#TODO add function that closes and removes client
-
 import threading
 import socket
 
@@ -61,16 +59,26 @@ def receive_mess():
         # get nickname from client
         client.send('NICK'.encode('utf-8'))
         nickname = client.recv(1024).decode('utf-8')
-        clients[nickname] = client
 
-        # print nickname on server and broadcast new client
-        print(f'{nickname} connected to server!')
-        send_mess(nickname, f'\n{nickname} just joined the chat!!\n'.encode('utf-8'))
-        client.send('Connected to the server!'.encode('utf-8'))
+        # check if this nickname is taken
+        if nickname in clients.keys():
+            client.send(f'This nick: {nickname} is already used, you cannot join the server'.encode('utf-8'))
+            print(f'Disconnected from {str(address)}')
+            client.close()
+            break
 
-        # each client runs on 1 thread
-        thread = threading.Thread(target=handle, args=(nickname,))
-        thread.start()
+        else:
+
+            clients[nickname] = client
+
+            # print nickname on server and broadcast new client
+            print(f'{nickname} connected to server!')
+            send_mess(nickname, f'\n{nickname} just joined the chat!!\n'.encode('utf-8'))
+            client.send('Connected to the server!'.encode('utf-8'))
+
+            # each client runs on 1 thread
+            thread = threading.Thread(target=handle, args=(nickname,))
+            thread.start()
 
 print("Server is listening ...")
 receive_mess()
