@@ -8,7 +8,10 @@ nick = input('Choose your nickname: ')
 
 # connect to server
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect(('127.0.0.1', 21375))
+try:
+    client.connect(('127.0.0.1', 21375))
+except:
+    exit()
 
 canClose = False
 

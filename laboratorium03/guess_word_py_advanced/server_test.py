@@ -17,11 +17,32 @@ try:
     server.listen()
 except OSError:
     print('OSError: socket already in use')
+    exit()
 
 
-# dict that contains nickname and info about client
+########## global variables
 clients = {}
 word = ''
+temp_word = ''
+allowed_errors = 7
+
+
+#################### printing W/L messages
+def print_win_mess():
+    send_all(f'Congratulations, YOU WON\nGuessed word is {word}\n\nThanks for the game\nDisconnecting ...'.encode('utf-8'))
+    disconnect_all()
+
+
+def print_loose_mess():
+    send_all(f'Better luck next time, your word was:\n{word}\n\nThanks for the game\nDisconnecting ...'.encode('utf-8'))
+    disconnect_all()
+    
+
+################### functions to disconnect people
+def disconnect_all():
+    time.sleep(5)
+    for c in clients.keys():
+        disconnect(c)
 
 
 def disconnect(nick):
@@ -32,6 +53,7 @@ def disconnect(nick):
         send_mess(nick, f'{nick} left the game'.encode('utf-8'))
 
 
+#################### sending messages
 # sending message to everyone except client that sent that mess
 def send_mess(nick, mess):
     for k,v in clients.items():
@@ -44,6 +66,12 @@ def send_mess(nick, mess):
             v.send(''.encode('utf-8'))
 
 
+def send_all(mess):
+    for _,v in clients.items():
+        v.send(mess)
+
+
+# choose word to play with
 def find_word():
     global word
     x = random.randint(1, 3185955)
@@ -57,8 +85,8 @@ def find_word():
 
 # handle mess from clients
 def handle(nick):
+    global allowed_errors, temp_word
     guesses = []
-    allowed_errors = 7
 
     while True:
         try:
@@ -71,14 +99,10 @@ def handle(nick):
 
             # find out if word was guessed
             if temp_word == word:
-                clients[nick].send(f'Congratulations, YOU WON\nGuessed word is {word}'.encode('utf-8'))
-                send_mess(nick, f'Player {nick} just guessed the word.\nThe word was: {word}\nEnding game...\nThank you for playing'.encode('utf-8'))
-                time.sleep(5)
-                for c in clients.keys():
-                    disconnect(c)
+                print_win_mess()
                 break
             else:
-                clients[nick].send(f'You can make {allowed_errors} errors\nYour word: {temp_word}'.encode('utf-8'))
+                send_all(f'You can make {allowed_errors} errors\nYour word: {temp_word}\n'.encode('utf-8'))
 
             # receive message from client
             mess = clients[nick].recv(1024).decode('utf-8')
@@ -86,7 +110,9 @@ def handle(nick):
 
             # check if player is guessing whole word or just 1 letter
             if len(mess) < 2:
-                if mess in guesses: allowed_errors -= 1
+                if mess in guesses:
+                    allowed_errors -= 1
+                    send_all(f'PLayer {nick} tried to guess letter that already was guessed: {mess}'.encode('utf-8'))
                 else: guesses.append(mess.lower())
             else:
                 try_guess = ''
@@ -94,22 +120,16 @@ def handle(nick):
                     try_guess += f'{letter} '
 
                 if try_guess == word:
-                    clients[nick].send(f'Congratulations, you guessed it correctly!\nThe word was: {word}'.encode('utf-8'))
-                    send_mess(nick, f'Player {nick} just guessed the word.\nThe word was: {word}\nEnding game ...\nThank you for playing'.encode('utf-8'))
-                    time.sleep(5)
-                    for c in clients.keys():
-                        disconnect(c)
+                    print_win_mess()
                     break
 
             # handle allowed errors
-            if mess.lower() not in word.lower(): allowed_errors -= 1
+            if mess.lower() not in word.lower():
+                allowed_errors -= 1
+                send_all(f'Player {nick} did not guess the letter, letter used: {mess}'.encode('utf-8'))
             if allowed_errors < 0:
-                clients[nick].send(f'Better luck next time, your word was:\n{word}'.encode('utf-8'))
-                send_mess(nick, f'Player {nick} did not guess the word'.encode('utf-8'))
-                time.sleep(5)
-                disconnect(nick)
+                print_loose_mess()
                 break
-
 
         except:
             # remove, close and send mess that client is no more
